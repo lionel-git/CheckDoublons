@@ -10,9 +10,12 @@ namespace Hasher
     {
         private SortedDictionary<T, List<FileInfo>> _hashFiles;
 
-        public HashFileInfo()
+        private string _keyName;
+
+        public HashFileInfo(string keyName = "hash")
         {
             _hashFiles = new SortedDictionary<T, List<FileInfo>>();
+            _keyName = keyName;
         }
 
         private void Add(T key, FileInfo fileInfo)
@@ -23,14 +26,14 @@ namespace Hasher
                 _hashFiles.Add(key, new List<FileInfo>() { fileInfo });
         }
 
-        public static string ToString(KeyValuePair<T, List<FileInfo>> hashFile, bool full = false)
+        public string ToString(KeyValuePair<T, List<FileInfo>> hashFile, bool full = false)
         {
             if (!full)
                 return $"{hashFile.Key} => {hashFile.Value.Count} ({hashFile.Value[0].FullName})";
             else
             {
                 var sb = new StringBuilder();
-                sb.AppendLine($"Hash = {hashFile.Key}");
+                sb.AppendLine($"{_keyName} = {hashFile.Key}");
                 foreach (var file in hashFile.Value)
                 {
                     sb.AppendLine($"{file.FullName}");
@@ -98,7 +101,7 @@ namespace Hasher
             {
                 if (hashFile.Value.Count > 1)
                 {
-                    Console.WriteLine($"Hash Conflict for: {Helpers.GetInfo(hashFile, true)}");
+                    Console.WriteLine($"{_keyName} conflict for: {ToString(hashFile, true)}");
                     treatDoublons(hashFile.Value);
                 }
             }
