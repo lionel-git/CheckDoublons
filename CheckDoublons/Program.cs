@@ -24,8 +24,9 @@ namespace CheckDoublons
 
         static void Main(string[] args)
         {
+            string path = @"d:\v";
             var sizeFileInfo = new HashFileInfo<long>("Size");
-            sizeFileInfo.ScanDirectory(@"c:\tmp", "", x => x.Length);
+            sizeFileInfo.ScanDirectory(path, "", x => x.Length);
            // Console.WriteLine(sizeFileInfo.ToString(true));
 
             sizeFileInfo.CheckDoublons(x => { HashMd5(x); });

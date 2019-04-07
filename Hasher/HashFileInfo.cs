@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Hasher
 {
@@ -80,19 +81,41 @@ namespace Hasher
             }
         }
 
+        private int RateFile(FileInfo fileInfo)
+        {
+            int rate = 1000;
+            if (Regex.Match(fileInfo.FullName, "Good").Success)
+                rate = -1;
+            if (Regex.Match(fileInfo.FullName, "Very.*Good").Success)
+                rate = -2;
+            return rate;
+        }
+
         public void RateFile(List<FileInfo> fileInfos, Func<int, T> converter)
         {
             foreach (var fileInfo in fileInfos)
             {
-                int rate = 1;
+                int rate = RateFile(fileInfo);
                 Add(converter(rate), fileInfo);
             }
         }
 
         public void MoveDoublons()
         {
-            Console.WriteLine("Move doublons:");
-            Console.WriteLine(ToString(true));
+            Console.WriteLine("Move doublons");
+            int count = 0;
+            foreach (var hashFile in _hashFiles)
+            {
+                if (++count > 1)
+                {
+                    foreach (var fileInfo in hashFile.Value)
+                    {
+                        Console.WriteLine($"Should move {fileInfo.FullName} ({hashFile.Key})");
+                    }
+                }
+                else
+                    Console.WriteLine($"Best {_keyName} = {hashFile.Key} ({hashFile.Value.Count})");
+            }
         }
 
         public void CheckDoublons(Action<List<FileInfo>> treatDoublons)
