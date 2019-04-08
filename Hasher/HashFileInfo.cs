@@ -19,7 +19,7 @@ namespace Hasher
             _keyName = keyName;
         }
 
-        private void Add(T key, FileInfo fileInfo)
+        protected void Add(T key, FileInfo fileInfo)
         {
             if (_hashFiles.ContainsKey(key))
                 _hashFiles[key].Add(fileInfo);
@@ -59,46 +59,7 @@ namespace Hasher
             return sb.ToString();
         }
 
-        public void ScanDirectory(string path, string filter, Func<FileInfo, T> selector)
-        {
-            var files = Directory.GetFiles(path, filter, SearchOption.AllDirectories);
-            foreach (var file in files)
-            {
-                var fileInfo = new FileInfo(file);
-                Add(selector(fileInfo), fileInfo);
-            }
-        }
-
-        public void Md5Hash(List<FileInfo> fileInfos, Func<Guid, T> converter)
-        {
-            foreach (var fileInfo in fileInfos)
-            {
-                using (var md5 = MD5.Create())
-                {
-                    var guid = new Guid(md5.ComputeHash(File.ReadAllBytes(fileInfo.FullName)));
-                    Add(converter(guid), fileInfo);
-                }
-            }
-        }
-
-        private int RateFile(FileInfo fileInfo)
-        {
-            int rate = 1000;
-            if (Regex.Match(fileInfo.FullName, "Good").Success)
-                rate = -1;
-            if (Regex.Match(fileInfo.FullName, "Very.*Good").Success)
-                rate = -2;
-            return rate;
-        }
-
-        public void RateFile(List<FileInfo> fileInfos, Func<int, T> converter)
-        {
-            foreach (var fileInfo in fileInfos)
-            {
-                int rate = RateFile(fileInfo);
-                Add(converter(rate), fileInfo);
-            }
-        }
+      
 
         public void MoveDoublons()
         {
