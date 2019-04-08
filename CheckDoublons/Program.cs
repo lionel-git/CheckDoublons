@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Hasher;
 
@@ -7,6 +6,13 @@ namespace CheckDoublons
 {
     class Program
     {
+        static void ScanDirectory(string path)
+        {
+            var scanner = new Scanner();
+            scanner.ScanDirectory(path, "");
+            scanner.CheckDoublons(x => { HashMd5(x); });
+        }
+
         static void HashMd5(List<FileInfo> fileInfos)
         {
             var md5 = new Md5();
@@ -23,10 +29,7 @@ namespace CheckDoublons
 
         static void Main(string[] args)
         {
-            string path = @"c:\tmp";
-            var scanner = new Scanner();
-            scanner.ScanDirectory(path, "");
-            scanner.CheckDoublons(x => { HashMd5(x); });
+            ScanDirectory(@"d:\v");
         }
     }
 }
